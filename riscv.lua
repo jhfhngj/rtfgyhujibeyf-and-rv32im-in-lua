@@ -238,6 +238,12 @@ if event.type == "interrupt" and not mem.halted then
 			mem.halted = true
 			return
 		end
+        if next_pc % 4 ~= 0 then
+			if #mem.tx > 0 then print(mem.tx); mem.tx = "" end
+			print(string.format("[Instruction address misaligned at 0x%08x -> 0x%08x - Halt]", pc, next_pc))
+			mem.halted = true
+			return
+		end
 		pc = next_pc
 	end
 
