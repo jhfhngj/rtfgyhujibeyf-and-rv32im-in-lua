@@ -3,6 +3,7 @@
 #include "text.h"
 #include "math.h"
 #include "cfg.h"
+#include "io.h"
 
 extern char _end; // Provided by link.ld at end of .bss
 
@@ -98,8 +99,8 @@ int main(void) {
         puts("\n");
 
         if (streq(input, "help")) {
-            puts("Commands:\nhelp: Opens this\nsysinfo: Live hardware stats\nbench: Run benchmark\ntime: Running time\nexit: Halts CPU\necho: Echo\n");
-        } else if (streq(input, "sysinfo")) {
+            puts("Commands:\nhelp: Opens this\nsysinfo: Live hardware stats\nbench: Run benchmark\ntime: Running time\nexit: Halts CPU\necho: Echo\ndlsend: Send digiline\ndlrecv: Read digiline\n");
+} else if (streq(input, "sysinfo")) {
             run_sysinfo();
         } else if (streq(input, "bench")) {
             run_bench();
@@ -115,7 +116,23 @@ int main(void) {
             puts("Text:\n");
             gets(input);
             puts(input);
-            puts("\n");
+            puts("\n");        } else if (streq(input, "dlsend")) {
+            char chan[32];
+            puts("Channel:\n");
+            get_line(chan,sizeof(chan));
+            puts("Message:\n");
+            gets(input);
+            dl_send(chan, input);
+            puts("Sent!\n");
+        } else if (streq(input, "dlrecv")) {
+            if (!dl_available()) {
+                puts("No messages.\n");
+            } else {
+                while (dl_available()) {
+                    putchar(dl_read());
+                }
+            }
+
         } else if (input[0] != '\0') {
             puts("Unknown command: ");
             puts(input);
