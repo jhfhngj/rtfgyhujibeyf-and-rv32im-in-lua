@@ -22,10 +22,7 @@ static inline void flush(void) {
 }
 
 static inline char getchar(void) {
-    char c;
-    while (!(c = *UART_ADDR)) {
-    }
-    return c;
+    return *UART_ADDR;
 }
 
 // Compare two strings character by character
