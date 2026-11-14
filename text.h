@@ -1,6 +1,6 @@
 #ifndef TEXT_H
 #define TEXT_H
-
+#include "cfg.h"
 #define UART_ADDR ((volatile char *)0x10000000)
 
 static inline void putchar(char c) {
@@ -38,10 +38,23 @@ static inline int streq(const char *a, const char *b) {
 }
 
 // Reads a line from UART into buf (up to max_len - 1 chars) and null-terminates it
+// Reads a line from UART into buf (up to max_len - 1 chars) and null-terminates it
 static inline char *get_line(char *buf, int max_len) {
+    uint64_t last_active = read_mtime();
     int i = 0;
     while (1) {
-        char c = getchar();
+        char c = *UART_ADDR;
+        if (c == 0) {
+            if (ahaltenable) {
+                if ((read_mtime() - last_active) >= ((uint64_t)ahalttime * MTIME_FREQ_HZ)) {
+                    printf("MeaOS is now sleeping.\n");
+                    __asm__ volatile ("ebreak");
+                }
+            }
+            continue;
+        }
+
+        last_active = read_mtime();
 
         if (c == '\n' || c == '\r') {
             break;
@@ -63,7 +76,7 @@ static inline char *get_line(char *buf, int max_len) {
 }
 
 static inline char *gets(char *buf) {
-    return get_line(buf, 128);
+    return get_line(buf, bufsize);
 }
 
 static inline void print_uint(uint32_t n) {

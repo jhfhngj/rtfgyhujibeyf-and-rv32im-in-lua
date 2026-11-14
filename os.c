@@ -2,23 +2,9 @@
 #include <stdint.h>
 #include "text.h"
 #include "math.h"
-
-#define CLINT_MTIME_LO ((volatile uint32_t *)0x0200BFF8)
-#define CLINT_MTIME_HI ((volatile uint32_t *)0x0200BFFC)
-#define MTIME_FREQ_KHZ 10000u // 10 MHz = 10,000 ticks per ms
-#define MTIME_FREQ_HZ  10000000ULL
-#define TOTAL_RAM      32768u
+#include "cfg.h"
 
 extern char _end; // Provided by link.ld at end of .bss
-
-static inline uint64_t read_mtime(void) {
-    uint32_t hi, lo;
-    do {
-        hi = *CLINT_MTIME_HI;
-        lo = *CLINT_MTIME_LO;
-    } while (hi != *CLINT_MTIME_HI);
-    return ((uint64_t)hi << 32) | lo;
-}
 
 void run_sysinfo(void) {
     // 1. Read live stack pointer register
@@ -99,13 +85,14 @@ void run_bench(void) {
 }
 
 int main(void) {
-    puts("MeaOS 1.0\n");
+    puts("MeaOS\n");
     puts("Initializing input\n");
 
-    char input[128];
+    char input[bufsize];
 
     for (;;) {
-        puts("MeaOS >\n");
+        puts(prompt);
+        puts("\n");
         gets(input);
         puts(input);
         puts("\n");
