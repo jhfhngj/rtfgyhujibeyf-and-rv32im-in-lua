@@ -66,4 +66,20 @@ static inline char *gets(char *buf) {
     return get_line(buf, 128);
 }
 
+static inline void print_uint(uint32_t n) {
+    char buf[12];
+    int i = 0;
+    if (n == 0) {
+        putchar('0');
+        return;
+    }
+    while (n > 0) {
+        buf[i++] = (char)('0' + (n % 10));
+        n /= 10;
+    }
+    while (i > 0) {
+        putchar(buf[--i]);
+    }
+}
+
 #endif // TEXT_H

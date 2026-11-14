@@ -16,7 +16,10 @@ SECTIONS {
         *(.data*)
     }
 
-    .bss : {
+    .bss : ALIGN(4) {
         *(.bss*)
+        *(.sbss*)
+        *(COMMON)
     }
+    _end = .;
 }
