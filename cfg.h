@@ -18,13 +18,4 @@
 #define customsleeptxt "M e a O S\nM e a O S\nM e a O S\nM e a O S\nM e a O S\nM e a O S\n"
 #include <stdint.h>
 
-static inline uint64_t read_mtime(void) {
-    uint32_t hi, lo;
-    do {
-        hi = *CLINT_MTIME_HI;
-        lo = *CLINT_MTIME_LO;
-    } while (hi != *CLINT_MTIME_HI);
-    return ((uint64_t)hi << 32) | lo;
-}
-
 #endif // CFG_H
