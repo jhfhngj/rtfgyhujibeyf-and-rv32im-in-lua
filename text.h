@@ -13,6 +13,10 @@ static inline void puts(const char *s) {
     }
 }
 
+static inline void clear() {
+    puts("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+}
+
 #define printf puts
 
 static inline void flush(void) {
@@ -44,7 +48,13 @@ static inline char *get_line(char *buf, int max_len) {
         if (c == 0) {
             if (ahaltenable) {
                 if ((read_mtime() - last_active) >= ((uint64_t)ahalttime * MTIME_FREQ_HZ)) {
-                    printf("MeaOS is now sleeping.\n");
+                    if (!customsleep) {
+                        clear();
+                        printf("MeaOS is now sleeping.\n");
+                    } else {
+                        clear();
+                        printf(customsleeptxt);
+                    }
                     __asm__ volatile ("ebreak");
                 }
             }
