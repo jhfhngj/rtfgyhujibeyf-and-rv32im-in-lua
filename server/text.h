@@ -38,8 +38,6 @@ static inline int streq(const char *a, const char *b) {
     return *a == *b;
 }
 
-// Reads a line from UART into buf (up to max_len - 1 chars) and null-terminates it
-// Reads a line from UART into buf (up to max_len - 1 chars) and null-terminates it
 static inline char *get_line(char *buf, int max_len) {
     uint64_t last_active = read_mtime();
     int i = 0;
@@ -100,6 +98,45 @@ static inline void print_uint(uint32_t n) {
     while (i > 0) {
         putchar(buf[--i]);
     }
+}
+
+#include <stddef.h>
+
+static inline char *join(char *dst, size_t cap, const char *sep,
+                             const char *const *items, size_t count) {
+    if (dst == NULL || cap == 0) return NULL;
+
+    size_t pos = 0;
+    size_t max_write = cap - 1;
+
+    for (size_t i = 0; i < count; i++) {
+        if (i > 0 && sep != NULL) {
+            for (const char *s = sep; *s != '\0'; s++) {
+                if (pos >= max_write) goto done;
+                dst[pos++] = *s;
+            }
+        }
+
+        if (items[i] != NULL) {
+            for (const char *p = items[i]; *p != '\0'; p++) {
+                if (pos >= max_write) goto done;
+                dst[pos++] = *p;
+            }
+        }
+    }
+
+done:
+    dst[pos] = '\0';
+    return dst;
+}
+static inline size_t lens(const char *s) {
+    if (s == NULL) return 0; // Optional safety guard for bare-metal
+
+    const char *p = s;
+    while (*p != '\0') {
+        p++;
+    }
+    return (size_t)(p - s);
 }
 
 #endif // TEXT_H
